@@ -63,7 +63,6 @@ endif;
 	<body data-compression="<?php echo rawurlencode($COMPRESSION); ?>">
 		<header>
 			<div id="aboutbox">
-				<?php echo I18n::_('%s is a minimalist, open source online pastebin where the server has zero knowledge of pasted data. Data is encrypted/decrypted <i>in the browser</i> using 256 bits AES. More information on the <a href="https://privatebin.info/">project page</a>.', I18n::_($NAME)); ?><br />
 <?php
 if (strlen($NOTICE)):
 ?>
@@ -71,9 +70,6 @@ if (strlen($NOTICE)):
 endif;
 ?>
 			</div>
-			<h1 class="title reloadlink"><?php echo I18n::_($NAME); ?></h1><br />
-			<h2 class="title"><?php echo I18n::_('Because ignorance is bliss'); ?></h2><br />
-			<h3 class="title"><?php echo $VERSION; ?></h3>
 			<noscript><div id="noscript" class="nonworking"><?php echo I18n::_('JavaScript is required for %s to work. Sorry for the inconvenience.', I18n::_($NAME)); ?></div></noscript>
 			<div id="oldnotice" class="nonworking hidden">
 				<?php echo I18n::_('%s requires a modern browser to work.', I18n::_($NAME)), PHP_EOL; ?>
