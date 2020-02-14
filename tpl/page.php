@@ -1,5 +1,13 @@
 <?php
 use PrivateBin\I18n;
+
+session_start();
+if ((!$_SESSION['logged_in']) || ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800))) {
+	redirect("/login?reset", 'Please login');
+} else {
+	$_SESSION['LAST_ACTIVITY'] = time();
+}
+
 ?><!DOCTYPE html>
 <html lang="<?php echo I18n::_('en'); ?>">
 	<head>

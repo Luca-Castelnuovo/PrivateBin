@@ -26,7 +26,8 @@
 	"require" : {
 		"php" : "^5.5.0 || ^7.0",
 		"paragonie/random_compat" : "2.0.18",
-		"yzalis/identicon" : "1.2.0"
+		"yzalis/identicon" : "1.2.0",
+		"league/oauth2-github": "^2.0"
 	},
 	"require-dev" : {
 		"codacy/coverage" : "dev-master",

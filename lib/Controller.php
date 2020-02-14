@@ -196,6 +196,14 @@ class Controller
      */
     private function _create()
     {
+        // Authentication
+        session_start();
+        if ((!$_SESSION['logged_in']) || ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800))) {
+            $this->_return_message(1, 'Not logged in. <a href="/login">Login</a>');
+        } else {
+            $_SESSION['LAST_ACTIVITY'] = time();
+        }
+
         // Ensure last paste from visitors IP address was more than configured amount of seconds ago.
         TrafficLimiter::setConfiguration($this->_conf);
         if (!TrafficLimiter::canPass()) {
@@ -270,6 +278,14 @@ class Controller
      */
     private function _delete($dataid, $deletetoken)
     {
+        // Authentication
+        session_start();
+        if ((!$_SESSION['logged_in']) || ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800))) {
+            $this->_return_message(1, 'Not logged in. <a href="/login">Login</a>');
+        } else {
+            $_SESSION['LAST_ACTIVITY'] = time();
+        }
+
         try {
             $paste = $this->_model->getPaste($dataid);
             if ($paste->exists()) {
