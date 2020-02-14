@@ -6,8 +6,8 @@ $allowed_users = json_decode(file_get_contents("https://test.lucacastelnuovo.nl/
 
 
 $provider = new League\OAuth2\Client\Provider\Github([
-    'clientId'          => $GLOBALS['config']->github->client_id,
-    'clientSecret'      => $GLOBALS['config']->github->client_secret,
+    'clientId'          => $github_client_id,
+    'clientSecret'      => $github_client_secret,
     'redirectUri'       => 'https://transfer.lucacastelnuovo.nl/login',
 ]);
 
