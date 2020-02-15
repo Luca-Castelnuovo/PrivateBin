@@ -4,7 +4,7 @@ require_once 'vendor/autoload.php';
 session_start();
 
 $github_client_id = '738bde32ca3360c16554';
-$github_client_secret = '0f3808aa2f6bc0647c9ccbd394dcbf84f9f5d0c6';
+$github_client_secret = ''; // Will be added on server
 $allowed_users = json_decode(file_get_contents("https://test.lucacastelnuovo.nl/users/Luca-Castelnuovo/configuration/transfer.json"))->allowed_users;
 
 
