@@ -4,6 +4,8 @@ $isCpct = substr($template, 9, 8) === '-compact';
 $isDark = substr($template, 9, 5) === '-dark';
 $isPage = substr($template, -5) === '-page';
 
+session_start();
+
 ?><!DOCTYPE html>
 <html lang="<?php echo I18n::_('en'); ?>">
 	<head>
@@ -406,7 +408,7 @@ endif;
 				</ul>
 				<ul class="nav navbar-nav pull-right">
 					<li>
-						<a href="<?php echo $_SESSION['logged_in'] ? '/login?msg=logout_success' : '/login?authenticate'; ?>" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
+						<a href="<?php echo $_SESSION['logged_in'] ? '/login' : '/login?authenticate'; ?>" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
 							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?php echo $_SESSION['logged_in'] ? 'Logout' : 'Login'; ?>
 						</a>
 					</li>

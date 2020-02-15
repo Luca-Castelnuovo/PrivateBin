@@ -29,7 +29,7 @@ if (isset($_GET['authenticate'])) {
 
 if (isset($_GET['code'])) {
     if(empty($_GET['state']) || ($_GET['state'] !== $_SESSION['state']))  {
-        redirect('/login?msg=invalid_state');
+        redirect('/login');
     }
 
     $token = $provider->getAccessToken('authorization_code', [
@@ -40,7 +40,7 @@ if (isset($_GET['code'])) {
         $username = $provider->getResourceOwner($token)->getNickname();
 
         if (!in_array($username, $allowed_users)) {
-            redirect('/login?msg=unauthorized_user');
+            redirect('/login');
         }
 
         $_SESSION['logged_in'] = true;
@@ -48,10 +48,10 @@ if (isset($_GET['code'])) {
 
         redirect('/');
     } catch (Exception $error) {
-        redirect('/login?msg=unknown_error');
+        redirect('/login');
     }
 }
 
 
 session_destroy();
-redirect("/?msg={$_GET['msg']}");
+redirect("/");
