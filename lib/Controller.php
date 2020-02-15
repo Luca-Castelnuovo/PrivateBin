@@ -200,6 +200,7 @@ class Controller
         session_start();
         if ((!$_SESSION['logged_in']) || ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800))) {
             $this->_return_message(1, 'Not logged in. <a href="/login">Login</a>');
+            return;
         } else {
             $_SESSION['LAST_ACTIVITY'] = time();
         }
