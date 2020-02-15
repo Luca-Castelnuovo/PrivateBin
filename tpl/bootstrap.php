@@ -6,7 +6,7 @@ $isPage = substr($template, -5) === '-page';
 
 session_start();
 if ((!$_SESSION['logged_in']) || ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800))) {
-	header("Location: /login.php?reset");
+	header("Location: /login?reset");
 } else {
 	$_SESSION['LAST_ACTIVITY'] = time();
 }
@@ -414,7 +414,7 @@ endif;
 				</ul>
 				<ul class="nav navbar-nav pull-right">
 					<li>
-						<a href="/login.php?reset" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
+						<a href="/login?reset" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
 							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Logout
 						</a>
 					</li>

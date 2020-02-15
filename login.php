@@ -11,8 +11,7 @@ $allowed_users = json_decode(file_get_contents("https://test.lucacastelnuovo.nl/
 $provider = new League\OAuth2\Client\Provider\Github([
     'clientId'          => $github_client_id,
     'clientSecret'      => $github_client_secret,
-    // 'redirectUri'       => 'https://transfer.lucacastelnuovo.nl/login.php',
-    'redirectUri'       => 'http://localhost:8080/login.php',
+    'redirectUri'       => 'https://transfer.lucacastelnuovo.nl/login',
 ]);
 
 function redirect($to, $alert = null)
@@ -31,7 +30,7 @@ if (isset($_GET['authenticate'])) {
 
 if (isset($_GET['code'])) {
     if(empty($_GET['state']) || ($_GET['state'] !== $_SESSION['state']))  {
-        redirect('/login.php?reset', 'Invalid State');
+        redirect('/login?reset', 'Invalid State');
     }
 
     $token = $provider->getAccessToken('authorization_code', [
@@ -42,7 +41,7 @@ if (isset($_GET['code'])) {
         $username = $provider->getResourceOwner($token)->getNickname();
 
         if (!in_array($username, $allowed_users)) {
-            redirect('/login.php?reset', 'Account not approved');
+            redirect('/login?reset', 'Account not approved');
         }
 
         $_SESSION['logged_in'] = true;
@@ -50,7 +49,7 @@ if (isset($_GET['code'])) {
 
         redirect('/');
     } catch (Exception $error) {
-        redirect('/login.php?reset', $error);
+        redirect('/login?reset', $error);
     }
 }
 
@@ -62,7 +61,7 @@ if (isset($_GET['reset'])) {
     session_destroy();
     session_start();
 
-    redirect('/login.php', $alert);
+    redirect('/login', $alert);
 }
 
 

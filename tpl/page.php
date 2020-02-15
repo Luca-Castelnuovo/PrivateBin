@@ -133,7 +133,7 @@ foreach ($EXPIRE as $key => $value):
 endforeach;
 ?>
 						</select>
-						<a href="/login.php?reset" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
+						<a href="/login?reset" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
 							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Logout
 						</a>
 					</div>
