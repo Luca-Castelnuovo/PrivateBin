@@ -406,8 +406,8 @@ endif;
 				</ul>
 				<ul class="nav navbar-nav pull-right">
 					<li>
-						<a href="<?php echo (!$_SESSION['logged_in']) || ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) ? '/login?authenticate' : '/logout?msg=logout_success'; ?>" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
-							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?php echo (!$_SESSION['logged_in']) || ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) ? 'Login' : 'Logout'; ?>
+						<a href="<?php echo $_SESSION['logged_in'] ? '/login?msg=logout_success' : '/login?authenticate'; ?>" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
+							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?php echo $_SESSION['logged_in'] ? 'Logout' : 'Login'; ?>
 						</a>
 					</li>
 <?php
