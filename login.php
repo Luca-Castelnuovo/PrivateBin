@@ -118,7 +118,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']) {
             echo "<script>M.toast({html: \"{$_SESSION['alert']}\"});</script>";
             unset($_SESSION['alert']);
         }
-    ?>>
+    ?>
 </body>
 
 </html>
