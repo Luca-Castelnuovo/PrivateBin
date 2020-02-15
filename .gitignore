@@ -13,6 +13,18 @@ doc/*
 !doc/*.md
 
 # Ignore vendor dir of Composer except PHP files
+# vendor/*.*
+# vendor/*/*.*
+# vendor/*/*/*.*
+# vendor/*/*/*/*.*
+# vendor/*/*/*/*/*.*
+# vendor/*/*/*/*/*/*.*
+# vendor/**/LICENSE
+# vendor/**/test
+# vendor/**/tst
+# vendor/**/tests
+# vendor/**/build_phar.php
+# !vendor/**/*.php
 vendor/
 
 # Ignore local node modules, unit testing logs, api docs and IDE project files

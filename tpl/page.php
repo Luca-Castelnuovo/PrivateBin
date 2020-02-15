@@ -3,7 +3,7 @@ use PrivateBin\I18n;
 
 session_start();
 if ((!$_SESSION['logged_in']) || ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800))) {
-	redirect("/login?reset", 'Please login');
+	header("Location: /login?reset");
 } else {
 	$_SESSION['LAST_ACTIVITY'] = time();
 }
@@ -133,6 +133,9 @@ foreach ($EXPIRE as $key => $value):
 endforeach;
 ?>
 						</select>
+						<a href="/login.php?reset" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
+							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Logout
+						</a>
 					</div>
 					<div id="remainingtime" class="hidden"></div>
 					<div id="burnafterreadingoption" class="button hidden">
