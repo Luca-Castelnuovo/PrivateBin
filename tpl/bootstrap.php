@@ -5,6 +5,7 @@ $isDark = substr($template, 9, 5) === '-dark';
 $isPage = substr($template, -5) === '-page';
 
 session_start();
+$logged_in = $_SESSION['logged_in'] && ($_SESSION['ip'] == $_SERVER['REMOTE_ADDR']) && isset($_SESSION['LAST_ACTIVITY'] && (time() - $_SESSION['LAST_ACTIVITY'] > 1800);
 
 ?><!DOCTYPE html>
 <html lang="<?php echo I18n::_('en'); ?>">
@@ -408,8 +409,8 @@ endif;
 				</ul>
 				<ul class="nav navbar-nav pull-right">
 					<li>
-						<a href="<?php echo $_SESSION['logged_in'] ? '/login' : '/login?authenticate'; ?>" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
-							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?php echo $_SESSION['logged_in'] ? 'Logout' : 'Login'; ?>
+						<a href="<?php echo $logged_in ? '/login' : '/login?authenticate'; ?>" id="logoutbutton" type="button" class=" btn btn-<?php echo $isDark ? 'warning' : 'default'; ?> navbar-btn">
+							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?php echo $logged_in ? 'Logout' : 'Login'; ?>
 						</a>
 					</li>
 <?php
