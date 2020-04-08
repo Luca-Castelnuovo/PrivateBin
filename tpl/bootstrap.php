@@ -5,7 +5,7 @@ $isDark = substr($template, 9, 5) === '-dark';
 $isPage = substr($template, -5) === '-page';
 
 session_start();
-$logged_in = $_SESSION['logged_in'] && ($_SESSION['ip'] == $_SERVER['REMOTE_ADDR']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800);
+$logged_in = $_SESSION['logged_in'] && ($_SESSION['ip'] == $_SERVER['REMOTE_ADDR']);
 
 ?><!DOCTYPE html>
 <html lang="<?php echo I18n::_('en'); ?>">
