@@ -199,6 +199,7 @@ class Controller
         // Authentication
         session_start();
         if ((!$_SESSION['logged_in']) || ($_SESSION['ip'] != $_SERVER['REMOTE_ADDR']) || (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800))) {
+            $_SESSION['logged_in'] = false;
             $this->_return_message(1, 'Please login.');
             return;
         } else {
