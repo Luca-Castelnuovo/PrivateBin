@@ -6,7 +6,7 @@
  * @see       {@link https://github.com/PrivateBin/PrivateBin}
  * @copyright 2012 Sébastien SAUVAGE ({@link http://sebsauvage.net})
  * @license   {@link https://www.opensource.org/licenses/zlib-license.php The zlib/libpng License}
- * @version   1.3.2
+ * @version   1.3.4
  * @name      PrivateBin
  * @namespace
  */
@@ -18,14 +18,14 @@ jQuery.fn.draghover = function() {
     return this.each(function() {
         let collection = $(),
             self = $(this);
-  
+
         self.on('dragenter', function(e) {
             if (collection.length === 0) {
                 self.trigger('draghoverstart');
             }
             collection = collection.add(e.target);
         });
-  
+
         self.on('dragleave drop', function(e) {
             collection = collection.not(e.target);
             if (collection.length === 0) {
@@ -210,6 +210,64 @@ jQuery.PrivateBin = (function($, RawDeflate) {
         };
 
         /**
+         * number of seconds in a minute
+         *
+         * @name Helper.minute
+         * @private
+         * @enum   {number}
+         * @readonly
+         */
+        const minute = 60;
+
+        /**
+         * number of seconds in an hour
+         *
+         * = 60 * 60 seconds
+         *
+         * @name Helper.minute
+         * @private
+         * @enum   {number}
+         * @readonly
+         */
+        const hour = 3600;
+
+        /**
+         * number of seconds in a day
+         *
+         * = 60 * 60 * 24 seconds
+         *
+         * @name Helper.day
+         * @private
+         * @enum   {number}
+         * @readonly
+         */
+        const day = 86400;
+
+        /**
+         * number of seconds in a month (30 days, an approximation)
+         *
+         * = 60 * 60 * 24 * 30 seconds
+         *
+         * @name Helper.month
+         * @private
+         * @enum   {number}
+         * @readonly
+         */
+        const month = 2592000;
+
+        /**
+         * number of seconds in a non-leap year
+         *
+         * = 60 * 60 * 24 * 365 seconds
+         *
+         * @name Helper.year
+         * @private
+         * @enum   {number}
+         * @readonly
+         */
+        const year = 31536000;
+
+        /**
          * cache for script location
          *
          * @name Helper.baseUri
@@ -229,29 +287,65 @@ jQuery.PrivateBin = (function($, RawDeflate) {
         me.secondsToHuman = function(seconds)
         {
             let v;
-            if (seconds < 60)
+            if (seconds < minute)
             {
                 v = Math.floor(seconds);
                 return [v, 'second'];
             }
-            if (seconds < 60 * 60)
+            if (seconds < hour)
             {
-                v = Math.floor(seconds / 60);
+                v = Math.floor(seconds / minute);
                 return [v, 'minute'];
             }
-            if (seconds < 60 * 60 * 24)
+            if (seconds < day)
             {
-                v = Math.floor(seconds / (60 * 60));
+                v = Math.floor(seconds / hour);
                 return [v, 'hour'];
             }
             // If less than 2 months, display in days:
-            if (seconds < 60 * 60 * 24 * 60)
+            if (seconds < (2 * month))
             {
-                v = Math.floor(seconds / (60 * 60 * 24));
+                v = Math.floor(seconds / day);
                 return [v, 'day'];
             }
-            v = Math.floor(seconds / (60 * 60 * 24 * 30));
+            v = Math.floor(seconds / month);
             return [v, 'month'];
+        };
+
+        /**
+         * converts a duration string into seconds
+         *
+         * The string is expected to be optional digits, followed by a time.
+         * Supported times are: min, hour, day, month, year, never
+         * Examples: 5min, 13hour, never
+         *
+         * @name Helper.durationToSeconds
+         * @function
+         * @param  {String} duration
+         * @return {number}
+         */
+        me.durationToSeconds = function(duration)
+        {
+            let pieces   = duration.split(/\d+/),
+                factor   = pieces[0] || 0,
+                timespan = pieces[1] || pieces[0];
+            switch (timespan)
+            {
+                case 'min':
+                    return factor * minute;
+                case 'hour':
+                    return factor * hour;
+                case 'day':
+                    return factor * day;
+                case 'month':
+                    return factor * month;
+                case 'year':
+                    return factor * year;
+                case 'never':
+                    return 0;
+                default:
+                    return factor;
+            }
         };
 
         /**
@@ -281,7 +375,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
         };
 
         /**
-         * convert URLs to clickable links.
+         * convert URLs to clickable links in the provided element.
          *
          * URLs to handle:
          * <pre>
@@ -292,14 +386,15 @@ jQuery.PrivateBin = (function($, RawDeflate) {
          *
          * @name   Helper.urls2links
          * @function
-         * @param  {string} html
-         * @return {string}
+         * @param  {HTMLElement} element
          */
-        me.urls2links = function(html)
+        me.urls2links = function(element)
         {
-            return html.replace(
-                /(((https?|ftp):\/\/[\w?!=&.\/-;#@~%+*-]+(?![\w\s?!&.\/;#~%"=-]*>))|((magnet):[\w?=&.\/-;#@~%+*-]+))/ig,
-                '<a href="$1" rel="nofollow">$1</a>'
+            element.html(
+                element.html().replace(
+                    /(((https?|ftp):\/\/[\w?!=&.\/-;#@~%+*-]+(?![\w\s?!&.\/;#~%"=-]>))|((magnet):[\w?=&.\/-;#@~%+*-]+))/ig,
+                    '<a href="$1" rel="nofollow">$1</a>'
+                )
             );
         };
 
@@ -424,7 +519,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * calculate expiration date given initial date and expiration period
-         * 
+         *
          * @name   Helper.calculateExpirationDate
          * @function
          * @param  {Date} initialDate - may not be empty
@@ -432,24 +527,12 @@ jQuery.PrivateBin = (function($, RawDeflate) {
          * @return {Date}
          */
         me.calculateExpirationDate = function(initialDate, expirationDisplayStringOrSecondsToExpire) {
-            let expirationDate = new Date(initialDate);
-
-            const expirationDisplayStringToSecondsDict = {
-                '5min': 300,
-                '10min': 600,
-                '1hour': 3500,
-                '1day': 86400,
-                '1week': 604800,
-                '1month': 2592000,
-                '1year': 31536000,
-                'never': 0
-            };
-
-            let secondsToExpiration = expirationDisplayStringOrSecondsToExpire;
+            let expirationDate      = new Date(initialDate),
+                secondsToExpiration = expirationDisplayStringOrSecondsToExpire;
             if (typeof expirationDisplayStringOrSecondsToExpire === 'string') {
-                secondsToExpiration = expirationDisplayStringToSecondsDict[expirationDisplayStringOrSecondsToExpire];
+                secondsToExpiration = me.durationToSeconds(expirationDisplayStringOrSecondsToExpire);
             }
-            
+
             if (typeof secondsToExpiration !== 'number') {
                 throw new Error('Cannot calculate expiration date.');
             }
@@ -2422,36 +2505,24 @@ jQuery.PrivateBin = (function($, RawDeflate) {
                 return;
             }
 
-            // escape HTML entities, link URLs, sanitize
-            const escapedLinkedText = Helper.urls2links(text),
-                  sanitizedLinkedText = DOMPurify.sanitize(
-                    escapedLinkedText, {
-                        ALLOWED_TAGS: ['a'],
-                        ALLOWED_ATTR: ['href', 'rel']
-                    }
-                  );
-            $plainText.html(sanitizedLinkedText);
-            $prettyPrint.html(sanitizedLinkedText);
-
-            switch (format) {
-                case 'markdown':
-                    const converter = new showdown.Converter({
-                        strikethrough: true,
-                        tables: true,
-                        tablesHeaderId: true,
-                        simplifiedAutoLink: true,
-                        excludeTrailingPunctuationFromURLs: true
-                    });
-                    // let showdown convert the HTML and sanitize HTML *afterwards*!
-                    $plainText.html(
-                        DOMPurify.sanitize(
-                            converter.makeHtml(text)
-                        )
-                    );
-                    // add table classes from bootstrap css
-                    $plainText.find('table').addClass('table-condensed table-bordered');
-                    break;
-                case 'syntaxhighlighting':
+            if (format === 'markdown') {
+                const converter = new showdown.Converter({
+                    strikethrough: true,
+                    tables: true,
+                    tablesHeaderId: true,
+                    simplifiedAutoLink: true,
+                    excludeTrailingPunctuationFromURLs: true
+                });
+                // let showdown convert the HTML and sanitize HTML *afterwards*!
+                $plainText.html(
+                    DOMPurify.sanitize(
+                        converter.makeHtml(text)
+                    )
+                );
+                // add table classes from bootstrap css
+                $plainText.find('table').addClass('table-condensed table-bordered');
+            } else {
+                if (format === 'syntaxhighlighting') {
                     // yes, this is really needed to initialize the environment
                     if (typeof prettyPrint === 'function')
                     {
@@ -2459,15 +2530,18 @@ jQuery.PrivateBin = (function($, RawDeflate) {
                     }
 
                     $prettyPrint.html(
-                        DOMPurify.sanitize(
-                            prettyPrintOne(escapedLinkedText, null, true)
+                        prettyPrintOne(
+                            Helper.htmlEntities(text), null, true
                         )
                     );
-                    // fall through, as the rest is the same
-                default: // = 'plaintext'
-                    $prettyPrint.css('white-space', 'pre-wrap');
-                    $prettyPrint.css('word-break', 'normal');
-                    $prettyPrint.removeClass('prettyprint');
+                } else {
+                    // = 'plaintext'
+                    $prettyPrint.text(text);
+                }
+                Helper.urls2links($prettyPrint);
+                $prettyPrint.css('white-space', 'pre-wrap');
+                $prettyPrint.css('word-break', 'normal');
+                $prettyPrint.removeClass('prettyprint');
             }
         }
 
@@ -3241,14 +3315,8 @@ jQuery.PrivateBin = (function($, RawDeflate) {
             const $commentEntryData = $commentEntry.find('div.commentdata');
 
             // set & parse text
-            $commentEntryData.html(
-                DOMPurify.sanitize(
-                    Helper.urls2links(commentText), {
-                        ALLOWED_TAGS: ['a'],
-                        ALLOWED_ATTR: ['href', 'rel']
-                    }
-                )
-            );
+            $commentEntryData.text(commentText);
+            Helper.urls2links($commentEntryData);
 
             // set nickname
             if (nickname.length > 0) {
@@ -3379,6 +3447,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
                 if (fadeOut === true) {
                     setTimeout(function () {
                         $comment.removeClass('highlight');
+
                     }, 300);
                 }
             };
@@ -3532,6 +3601,20 @@ jQuery.PrivateBin = (function($, RawDeflate) {
             }
         }
 
+
+        /**
+         * Clear the attachment input in the top navigation.
+         *
+         * @name   TopNav.clearAttachmentInput
+         * @function
+         */
+        function clearAttachmentInput()
+        {
+            // hide UI for selected files
+            // our up-to-date jQuery can handle it :)
+            $fileWrap.find('input').val('');
+        }
+
         /**
          * return raw text
          *
@@ -3626,9 +3709,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
             // in any case, remove saved attachment data
             AttachmentViewer.removeAttachmentData();
 
-            // hide UI for selected files
-            // our up-to-date jQuery can handle it :)
-            $fileWrap.find('input').val('');
+            clearAttachmentInput();
             AttachmentViewer.clearDragAndDrop();
 
             // pevent '#' from appearing in the URL
@@ -3653,11 +3734,11 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * Template Email body.
-         * 
+         *
          * @name   TopNav.templateEmailBody
-         * @private 
-         * @param {string} expirationDateString 
-         * @param {bool} isBurnafterreading 
+         * @private
+         * @param {string} expirationDateString
+         * @param {bool} isBurnafterreading
          */
         function templateEmailBody(expirationDateString, isBurnafterreading)
         {
@@ -3695,10 +3776,10 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * Trigger Email send.
-         * 
+         *
          * @name   TopNav.triggerEmailSend
-         * @private 
-         * @param {string} emailBody 
+         * @private
+         * @param {string} emailBody
          */
         function triggerEmailSend(emailBody)
         {
@@ -3911,7 +3992,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * show the "email" button
-         * 
+         *
          * @name   TopNav.showEmailbutton
          * @function
          * @param {int|undefined} optionalRemainingTimeInSeconds
@@ -3939,7 +4020,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * hide the "email" button
-         * 
+         *
          * @name   TopNav.hideEmailButton
          * @function
          */
@@ -3973,7 +4054,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * only hides the qr code button
-         * 
+         *
          * @name   TopNav.hideQrCodeButton
          * @function
          */
@@ -3984,7 +4065,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * hide all irrelevant buttons when viewing burn after reading paste
-         * 
+         *
          * @name   TopNav.hideBurnAfterReadingButtons
          * @function
          */
@@ -4020,7 +4101,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * hides the custom attachment
-         * 
+         *
          * @name  TopNav.hideCustomAttachment
          * @function
          */
@@ -4041,6 +4122,24 @@ jQuery.PrivateBin = (function($, RawDeflate) {
             if ($('#navbar').attr('aria-expanded') === 'true') {
                 $('.navbar-toggle').click();
             }
+        };
+
+        /**
+         * Reset the top navigation back to it's default values.
+         *
+         * @name   TopNav.resetInput
+         * @function
+         */
+        me.resetInput = function()
+        {
+            clearAttachmentInput();
+
+            $openDiscussion.prop('checked', false);
+            $burnAfterReading.prop('checked', false);
+            $openDiscussionOption.removeClass('buttondisabled');
+            $burnAfterReadingOption.removeClass('buttondisabled');
+
+            // TODO: reset expiration time
         };
 
         /**
@@ -4144,7 +4243,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * Highlight file upload
-         * 
+         *
          * @name  TopNav.highlightFileupload
          * @function
          */
@@ -4163,7 +4262,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * set the format on bootstrap templates in dropdown programmatically
-         * 
+         *
          * @name    TopNav.setFormat
          * @function
          */
@@ -4174,14 +4273,14 @@ jQuery.PrivateBin = (function($, RawDeflate) {
 
         /**
          * returns if attachment dropdown is readonly, not editable
-         * 
+         *
          * @name   TopNav.isAttachmentReadonly
          * @function
          * @return {bool}
          */
         me.isAttachmentReadonly = function()
         {
-            return $attach.hasClass('hidden');
+            return createButtonsDisplayed && $attach.hasClass('hidden');
         }
 
         /**
@@ -5064,6 +5163,7 @@ jQuery.PrivateBin = (function($, RawDeflate) {
             Editor.show();
             Editor.focusInput();
             AttachmentViewer.removeAttachment();
+            TopNav.resetInput();
 
             TopNav.showCreateButtons();
 
